@@ -1,5 +1,4 @@
-# Created by https://www.toptal.com/developers/gitignore/api/python,visualstudiocode
-# Edit at https://www.toptal.com/developers/gitignore?templates=python,visualstudiocode
+.env
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
@@ -170,11 +169,7 @@ poetry.toml
 
 ### VisualStudioCode ###
 .vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-!.vscode/*.code-snippets
+
 
 # Local History for Visual Studio Code
 .history/
@@ -186,9 +181,3 @@ poetry.toml
 # Ignore all local history of files
 .history
 .ionide
-
-###SQLite###
-*.sqlite
-*.db
-
-# End of https://www.toptal.com/developers/gitignore/api/python,visualstudiocode

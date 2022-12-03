@@ -1,37 +1,26 @@
 from hashlib import sha256
 
 from fastapi import Depends, FastAPI, HTTPException, Path
-from sqlalchemy.orm import Session
-
 from . import schemas
-from .db import crud, models
-from .db.database import LocalSession, engine
+from .db import database, crud
 
-models.Base.metadata.create_all(bind=engine)
-
-app = FastAPI()
-
-def get_db():
-    db = LocalSession()
-    try:
-        yield db
-    finally:
-        db.close()
-
+def get_dynamo_table():
+    table = database.initialize_db()
+    return table
 
 app = FastAPI()
-
 
 @app.post("/messages")
-async def messages(message: schemas.MessageHashBase, db: Session = Depends(get_db)):
+async def messages(message: schemas.MessageHashBase, db = Depends(get_dynamo_table)):
     hash = sha256(message.message.encode()).hexdigest()
-    crud.create_message(db, schemas.MessageHashCreate(
-        message=message.message, hash=hash))
+    
+    if crud.get_message(db, hash) is None:
+        crud.create_message(db, schemas.MessageHash(message=message.message, hash=hash))
     return {"hash": hash}
 
 
 @app.get("/messages/{hash}")
-async def messages(hash: str = Path(max_length=64, min_length=64), db: Session = Depends(get_db)):
+async def messages(hash: str = Path(max_length=64, min_length=64), db = Depends(get_dynamo_table)):
     message = crud.get_message(db, hash)
     if message is None:
         raise HTTPException(status_code=404, detail="Message not found")

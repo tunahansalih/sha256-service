@@ -1,0 +1,10 @@
+version: '2'
+
+services:  
+  sha256-service:
+    image: 'sha256-service:latest'
+    ports:
+      - 80:80
+    env_file:
+      - .env
+    

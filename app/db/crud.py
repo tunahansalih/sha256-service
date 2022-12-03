@@ -1,15 +1,22 @@
-from sqlalchemy.orm import Session
-
-from . import models
+from botocore.exceptions import ClientError
 
 from .. import schemas
 
-def get_message(db: Session, hash: str):
-    return db.query(models.MessageHash).filter(models.MessageHash.hash == hash).first()
 
-def create_message(db: Session, message: schemas.MessageHashCreate):
-    db_message = models.MessageHash(message=message.message, hash=message.hash)
-    db.add(db_message)
-    db.commit()
-    db.refresh(db_message)
-    return db_message
+def get_message(table, hash: str):
+    try:
+        response = table.get_item(Key={'hash': hash})
+        if 'Item' in response:
+            return schemas.MessageHash(**response['Item'])
+        else:
+            return None
+    except ClientError as e:
+        raise ValueError(e.response['Error']['Message'])
+
+
+def create_message(table, message: schemas.MessageHash):
+    try:
+        table.put_item(Item=message.dict())
+    except ClientError as e:
+        raise ValueError(e.response['Error']['Message'])
+
