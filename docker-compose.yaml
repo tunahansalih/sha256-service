@@ -1,8 +1,8 @@
 version: '2'
 
 services:  
-  sha256-service:
-    image: 'sha256-service:latest'
+  app:
+    build: sha256-service
     ports:
       - 80:80
     env_file:
