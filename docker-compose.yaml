@@ -1,0 +1,10 @@
+version: '2'
+
+services:  
+  app:
+    build: sha256-service
+    ports:
+      - 80:80
+    env_file:
+      - .env
+    
